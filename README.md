@@ -15,3 +15,5 @@ Change video name by path for your video
 Start programm
 
 Wait
+
+You might be need good and fast computer
