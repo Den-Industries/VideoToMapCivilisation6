@@ -78,9 +78,9 @@ cap = cv2.VideoCapture("shrek.avi")
 for i in range(100):
     cap.read()
 
-map_size = 96
+map_size = 128
 
-output_resolution = [1920, 1080]
+output_resolution = [1280, 720]
 
 fourcc = cv2.VideoWriter_fourcc(*"XVID")
 out = cv2.VideoWriter("output.avi", fourcc, 24.0, (output_resolution[0], output_resolution[1]))
@@ -91,10 +91,12 @@ frame_counter = -1
 while cap.isOpened():
     frame_counter += 1
     ret, frame = cap.read()
+    if frame is None:
+        break
     start = time.time()
     width_value = frame.shape[1] / map_size
     radius = width_value / (3 ** 0.5)
-    height_size = math.ceil(((frame.shape[0] / (radius * 3)) * 2.55)) + 2
+    height_size = math.ceil(((frame.shape[0] / (radius * 3)) * 2.55)) + 3
 
     grid = np.zeros([height_size, map_size + 1], dtype=int)
     for y in range(grid.shape[0]):
@@ -107,7 +109,7 @@ while cap.isOpened():
             av_clr = np.mean(frame_crop, axis=(0,1))
             closest = color_map[int(av_clr[0]/8)][int(av_clr[1]/8)][int(av_clr[2]/8)]#get_closest_tile(av_clr)
             grid[y, x] = closest
-            
+
     output = np.zeros((output_resolution[1], output_resolution[0], 3), np.uint8)
     width_value = output.shape[1] / map_size
     radius = width_value / (3 ** 0.5)
@@ -154,6 +156,7 @@ while cap.isOpened():
                                                     skali_tiles[i][:, :, 3] / 255.0, True)
     print("Time per frame ", time.time() - start, " Current index:", frame_counter, "     Done: ", (frame_counter / int(cap.get(cv2.CAP_PROP_FRAME_COUNT))) * 100, "%")
     cv2.imshow("1", cv2.resize(output, None, fx=0.5, fy=0.5))
+    cv2.imshow("2", cv2.resize(frame, None, fx=0.5, fy=0.5))
     cv2.waitKey(5)
     out.write(output)
 
